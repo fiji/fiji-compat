@@ -4,10 +4,12 @@ import java.awt.GraphicsEnvironment;
 
 import imagej.patcher.LegacyEnvironment;
 import imagej.patcher.LegacyInjector;
+import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtNewConstructor;
 import javassist.CtNewMethod;
+import javassist.NotFoundException;
 
 import org.scijava.util.AppUtils;
 
@@ -59,27 +61,40 @@ public class IJ1Patcher implements Runnable {
 							+ "}", clazz));
 			clazz.toClass();
 
-			clazz = pool.makeClass("fiji.$TransientFijiPatcher");
-			clazz.addInterface(pool.get("java.lang.Runnable"));
-			clazz.addMethod(CtNewMethod
-					.make("public void run() {"
-							+ "  imagej.legacy.LegacyExtensions.setAppName(\"(Fiji Is Just) ImageJ\");"
-							+ "  imagej.legacy.LegacyExtensions.setIcon(new java.io.File(\""
+			compileAndRun(
+					pool,
+					"imagej.legacy.LegacyExtensions.setAppName(\"(Fiji Is Just) ImageJ\");"
+							+ "imagej.legacy.LegacyExtensions.setIcon(new java.io.File(\""
 							+ AppUtils.getBaseDirectory(Main.class)
 							+ "/images/icon.png\"));"
-							+ "  imagej.legacy.LegacyExtensions.setLegacyEditor(new fiji.$TransientFijiEditor());"
-							+ "  /* make sure to run some Fiji-specific stuff after Help>Refresh Menus, e.g. installing all scripts into the menu */"
-							+ "  imagej.legacy.LegacyExtensions.runAfterRefreshMenus(new fiji.MenuRefresher());"
-							+ "  /* make sure that ImageJ2's LegacyInjector runs */"
-							+ "  imagej.legacy.DefaultLegacyService.preinit();"
-							+ "}", clazz));
-			Runnable run = (Runnable) clazz.toClass().newInstance();
-			run.run();
+							+ "imagej.legacy.LegacyExtensions.setLegacyEditor(new fiji.$TransientFijiEditor());"
+							+
+							/*
+							 * make sure to run some Fiji-specific stuff after
+							 * Help>Refresh Menus, e.g. installing all scripts
+							 * into the menu
+							 */
+							"imagej.legacy.LegacyExtensions.runAfterRefreshMenus(new fiji.MenuRefresher());"
+							+
+							/* make sure that ImageJ2's LegacyInjector runs */
+							"imagej.legacy.DefaultLegacyService.preinit();");
 			return;
 		} catch (NoClassDefFoundError e) {
 			// ignore: probably have newer ImageJ2 in class path
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void compileAndRun(final ClassPool pool, final String code)
+			throws NotFoundException, CannotCompileException,
+			InstantiationException, IllegalAccessException {
+		CtClass clazz;
+		clazz = pool.makeClass("fiji.$TransientFijiPatcher");
+		clazz.addInterface(pool.get("java.lang.Runnable"));
+		clazz.addMethod(CtNewMethod.make("public void run() {" + code + "}",
+				clazz));
+		Runnable run = (Runnable) clazz.toClass().newInstance();
+		run.run();
 	}
 }

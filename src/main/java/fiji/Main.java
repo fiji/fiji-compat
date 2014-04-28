@@ -154,6 +154,11 @@ public class Main {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 			System.exit(1);
+		} else if (IJ1Patcher.previousIJ1PatcherFound) try {
+			IJ1Patcher.fallBackToPreviousLegacyEnvironmentMain(args);
+		} catch (Throwable t) {
+			t.printStackTrace();
+			System.exit(1);
 		} else {
 			legacyMain(args);
 		}

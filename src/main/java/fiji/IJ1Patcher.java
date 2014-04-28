@@ -1,6 +1,8 @@
 package fiji;
 
 import java.awt.GraphicsEnvironment;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import imagej.patcher.LegacyEnvironment;
 import imagej.patcher.LegacyInjector;
@@ -21,7 +23,7 @@ import org.scijava.util.AppUtils;
 
 public class IJ1Patcher implements Runnable {
 	private static boolean alreadyPatched;
-	static boolean ij1PatcherFound;
+	static boolean ij1PatcherFound, previousIJ1PatcherFound;
 
 	@Override
 	public void run() {
@@ -45,6 +47,13 @@ public class IJ1Patcher implements Runnable {
 			Thread.currentThread().setContextClassLoader(
 					getClass().getClassLoader());
 			final ClassPool pool = ClassPool.getDefault();
+
+			try {
+				fallBackToPreviousLegacyEnvironment(pool);
+				return;
+			} catch (Throwable t) {
+				// ignore; fall back to previous patching method
+			}
 
 			CtClass clazz = pool.makeClass("fiji.$TransientFijiEditor");
 			clazz.addInterface(pool
@@ -84,6 +93,30 @@ public class IJ1Patcher implements Runnable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void fallBackToPreviousLegacyEnvironment(final ClassPool pool)
+			throws NotFoundException, CannotCompileException,
+			InstantiationException, IllegalAccessException {
+		compileAndRun(
+				pool,
+				"imagej.patcher.LegacyInjector.preinit();"
+						+ "new imagej.patcher.LegacyEnvironment(getClass().getClassLoader(),"
+						+ " java.awt.GraphicsEnvironment.isHeadless());");
+		previousIJ1PatcherFound = true;
+	}
+
+	static void fallBackToPreviousLegacyEnvironmentMain(final String... args)
+			throws SecurityException, NoSuchMethodException,
+			ClassNotFoundException, IllegalArgumentException,
+			IllegalAccessException, InvocationTargetException {
+		final ClassLoader loader = Thread.currentThread()
+				.getContextClassLoader();
+		final Method get = loader.loadClass("imagej.patcher.LegacyEnvironment")
+				.getMethod("getPatchedImageJ1");
+		final Object patched = get.invoke(null);
+		final Method main = patched.getClass().getMethod("main", String[].class);
+		main.invoke(patched, (Object) args);
 	}
 
 	private void compileAndRun(final ClassPool pool, final String code)

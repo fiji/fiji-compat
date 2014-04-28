@@ -4,11 +4,12 @@ import java.awt.GraphicsEnvironment;
 
 import imagej.patcher.LegacyEnvironment;
 import imagej.patcher.LegacyInjector;
-import imagej.util.AppUtils;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtNewConstructor;
 import javassist.CtNewMethod;
+
+import org.scijava.util.AppUtils;
 
 /**
  * Patch ij.jar using Javassist, handle headless mode, too.
@@ -55,7 +56,7 @@ public class IJ1Patcher implements Runnable {
 			clazz.addInterface(pool.get("java.lang.Runnable"));
 			clazz.addMethod(CtNewMethod.make("public void run() {"
 					+ "  imagej.legacy.LegacyExtensions.setAppName(\"(Fiji Is Just) ImageJ\");"
-					+ "  imagej.legacy.LegacyExtensions.setIcon(new java.io.File(\"" + AppUtils.getBaseDirectory() + "/images/icon.png\"));"
+					+ "  imagej.legacy.LegacyExtensions.setIcon(new java.io.File(\"" + AppUtils.getBaseDirectory(Main.class) + "/images/icon.png\"));"
 					+ "  imagej.legacy.LegacyExtensions.setLegacyEditor(new fiji.$TransientFijiEditor());"
 					+ "  /* make sure to run some Fiji-specific stuff after Help>Refresh Menus, e.g. installing all scripts into the menu */"
 					+ "  imagej.legacy.LegacyExtensions.runAfterRefreshMenus(new fiji.MenuRefresher());"

@@ -1,10 +1,8 @@
 package fiji;
 
-import java.awt.GraphicsEnvironment;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import net.imagej.patcher.LegacyEnvironment;
 import net.imagej.patcher.LegacyInjector;
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -32,12 +30,8 @@ public class IJ1Patcher implements Runnable {
 			return;
 		try {
 			LegacyInjector.preinit();
-			new LegacyEnvironment(getClass().getClassLoader(),
-					GraphicsEnvironment.isHeadless());
 			ij1PatcherFound = true;
 		} catch (NoClassDefFoundError e) {
-			fallBackToPreviousPatcher();
-		} catch (ClassNotFoundException e) {
 			fallBackToPreviousPatcher();
 		}
 		alreadyPatched = true;

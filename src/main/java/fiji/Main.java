@@ -4,7 +4,7 @@ import fiji.gui.FileDialogDecorator;
 import fiji.gui.JFileChooserDecorator;
 import ij.IJ;
 import ij.ImageJ;
-import imagej.patcher.LegacyEnvironment;
+import net.imagej.patcher.LegacyEnvironment;
 
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -153,6 +153,11 @@ public class Main {
 			LegacyEnvironment.getPatchedImageJ1().main(args);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
+			System.exit(1);
+		} else if (IJ1Patcher.previousIJ1PatcherFound) try {
+			IJ1Patcher.fallBackToPreviousLegacyEnvironmentMain(args);
+		} catch (Throwable t) {
+			t.printStackTrace();
 			System.exit(1);
 		} else {
 			legacyMain(args);

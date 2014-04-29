@@ -4,14 +4,15 @@ import java.awt.GraphicsEnvironment;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import imagej.patcher.LegacyEnvironment;
-import imagej.patcher.LegacyInjector;
+import net.imagej.patcher.LegacyEnvironment;
+import net.imagej.patcher.LegacyInjector;
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtNewConstructor;
 import javassist.CtNewMethod;
 import javassist.NotFoundException;
+import net.imagej.patcher.LegacyInjector;
 
 import org.scijava.util.AppUtils;
 

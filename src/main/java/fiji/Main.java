@@ -4,7 +4,7 @@ import fiji.gui.FileDialogDecorator;
 import fiji.gui.JFileChooserDecorator;
 import ij.IJ;
 import ij.ImageJ;
-import imagej.patcher.LegacyEnvironment;
+import net.imagej.patcher.LegacyEnvironment;
 
 import java.awt.Image;
 import java.awt.Toolkit;

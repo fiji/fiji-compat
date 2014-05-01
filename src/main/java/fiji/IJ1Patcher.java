@@ -28,9 +28,12 @@ public class IJ1Patcher implements Runnable {
 		if (alreadyPatched || "false".equals(System.getProperty("patch.ij1")))
 			return;
 		try {
+			Class.forName("net.imagej.legacy.plugin.LegacyInitializer");
 			LegacyInjector.preinit();
 			ij1PatcherFound = true;
 		} catch (NoClassDefFoundError e) {
+			fallBackToPreviousPatcher();
+		} catch (ClassNotFoundException e) {
 			fallBackToPreviousPatcher();
 		}
 		alreadyPatched = true;
@@ -95,6 +98,8 @@ public class IJ1Patcher implements Runnable {
 		compileAndRun(
 				pool,
 				"imagej.patcher.LegacyInjector.preinit();"
+						// need to have a matching legacy service
+						+ "new imagej.legacy.plugin.LegacyInitializer();"
 						+ "new imagej.patcher.LegacyEnvironment(getClass().getClassLoader(),"
 						+ " java.awt.GraphicsEnvironment.isHeadless());");
 		previousIJ1PatcherFound = true;

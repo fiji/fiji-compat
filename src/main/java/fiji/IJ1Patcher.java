@@ -110,7 +110,8 @@ public class IJ1Patcher implements Runnable {
 		final Method get = loader.loadClass("imagej.patcher.LegacyEnvironment")
 				.getMethod("getPatchedImageJ1");
 		final Object patched = get.invoke(null);
-		final Method main = patched.getClass().getMethod("main", String[].class);
+		final Method main = patched.getClass()
+				.getMethod("main", String[].class);
 		main.invoke(patched, (Object) args);
 	}
 

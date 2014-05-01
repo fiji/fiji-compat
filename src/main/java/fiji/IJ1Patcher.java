@@ -114,11 +114,13 @@ public class IJ1Patcher implements Runnable {
 		main.invoke(patched, (Object) args);
 	}
 
+	private int counter = 1;
+
 	private void compileAndRun(final ClassPool pool, final String code)
 			throws NotFoundException, CannotCompileException,
 			InstantiationException, IllegalAccessException {
 		CtClass clazz;
-		clazz = pool.makeClass("fiji.$TransientFijiPatcher");
+		clazz = pool.makeClass("fiji.$TransientFijiPatcher" + counter++);
 		clazz.addInterface(pool.get("java.lang.Runnable"));
 		clazz.addMethod(CtNewMethod.make("public void run() {" + code + "}",
 				clazz));

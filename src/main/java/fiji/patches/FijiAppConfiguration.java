@@ -1,13 +1,15 @@
 package fiji.patches;
 
-import imagej.legacy.plugin.LegacyAppConfiguration;
-import imagej.util.AppUtils;
-
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import net.imagej.legacy.plugin.LegacyAppConfiguration;
+
 import org.scijava.plugin.Plugin;
+import org.scijava.util.AppUtils;
+
+import fiji.Main;
 
 @Plugin(type = LegacyAppConfiguration.class)
 public class FijiAppConfiguration implements LegacyAppConfiguration {
@@ -18,7 +20,7 @@ public class FijiAppConfiguration implements LegacyAppConfiguration {
 	static {
 		URL url;
 		try {
-			final File file = new File(AppUtils.getBaseDirectory(), "images/icon.png");
+			final File file = new File(AppUtils.getBaseDirectory(Main.class), "images/icon.png");
 			url = file.exists() ? file.toURI().toURL() : null;
 		} catch (MalformedURLException e) {
 			url = null;

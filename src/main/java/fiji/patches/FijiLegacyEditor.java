@@ -1,11 +1,12 @@
 package fiji.patches;
 
-import fiji.FijiTools;
-import imagej.legacy.plugin.LegacyEditor;
-
 import java.io.File;
 
+import net.imagej.legacy.plugin.LegacyEditor;
+
 import org.scijava.plugin.Plugin;
+
+import fiji.FijiTools;
 
 @Plugin(type = LegacyEditor.class)
 public class FijiLegacyEditor implements LegacyEditor {

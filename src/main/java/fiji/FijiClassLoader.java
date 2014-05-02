@@ -2,7 +2,6 @@ package fiji;
 
 import ij.IJ;
 import ij.Macro;
-import imagej.util.LineOutputStream;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.scijava.util.LineOutputStream;
 import org.scijava.util.ProcessUtils;
 
 /**

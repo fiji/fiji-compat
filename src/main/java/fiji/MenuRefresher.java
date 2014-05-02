@@ -4,12 +4,14 @@ import ij.IJ;
 import ij.Menus;
 import ij.Prefs;
 import ij.plugin.PlugIn;
-import imagej.legacy.SwitchToModernMode;
 
 import java.awt.Menu;
 import java.awt.MenuItem;
 import java.awt.event.KeyEvent;
+import java.lang.reflect.Method;
 import java.util.Hashtable;
+
+import net.imagej.legacy.SwitchToModernMode;
 
 public class MenuRefresher implements PlugIn, Runnable {
 

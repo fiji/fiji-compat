@@ -40,7 +40,21 @@ public class MenuRefresher implements PlugIn, Runnable {
 
 		installScripts();
 		overrideCommands();
-		SwitchToModernMode.registerMenuItem();
+		try {
+			SwitchToModernMode.registerMenuItem();
+		}
+		catch (Throwable t) {
+			// fall back to old package name
+			try {
+				final Class<?> clazz = Class.forName("imagej.legacy.SwitchToModernMode");
+				final Method method = clazz.getMethod("registerMenuItem");
+				method.invoke(null);
+			}
+			catch (Throwable t2) {
+				t.printStackTrace();
+				t2.printStackTrace();
+			}
+		}
 		SampleImageLoader.install();
 		Main.installRecentCommands();
 

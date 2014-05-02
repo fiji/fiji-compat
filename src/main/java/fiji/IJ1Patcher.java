@@ -22,18 +22,17 @@ import org.scijava.util.AppUtils;
 public class IJ1Patcher implements Runnable {
 	private static boolean alreadyPatched;
 	static boolean ij1PatcherFound, previousIJ1PatcherFound;
+	protected Class<?> initializerClass;
 
 	@Override
 	public void run() {
 		if (alreadyPatched || "false".equals(System.getProperty("patch.ij1")))
 			return;
 		try {
-			Class.forName("net.imagej.legacy.plugin.LegacyInitializer");
+			initializerClass = net.imagej.legacy.plugin.LegacyInitializer.class;
 			LegacyInjector.preinit();
 			ij1PatcherFound = true;
 		} catch (NoClassDefFoundError e) {
-			fallBackToPreviousPatcher();
-		} catch (ClassNotFoundException e) {
 			fallBackToPreviousPatcher();
 		}
 		alreadyPatched = true;

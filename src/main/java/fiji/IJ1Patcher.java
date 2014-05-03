@@ -65,6 +65,7 @@ public class IJ1Patcher implements Runnable {
 				fallBackToPreviousLegacyEnvironment(pool);
 				return;
 			} catch (Throwable t) {
+				t.printStackTrace();
 				// ignore; fall back to previous patching method
 			}
 

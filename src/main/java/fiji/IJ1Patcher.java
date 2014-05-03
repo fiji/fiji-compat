@@ -1,5 +1,6 @@
 package fiji;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -12,6 +13,7 @@ import javassist.NotFoundException;
 import net.imagej.patcher.LegacyInjector;
 
 import org.scijava.util.AppUtils;
+import org.scijava.util.FileUtils;
 
 /**
  * Patch ij.jar using Javassist, handle headless mode, too.
@@ -22,16 +24,31 @@ import org.scijava.util.AppUtils;
 public class IJ1Patcher implements Runnable {
 	private static boolean alreadyPatched;
 	static boolean ij1PatcherFound, previousIJ1PatcherFound;
-	protected Class<?> initializerClass;
 
 	@Override
 	public void run() {
 		if (alreadyPatched || "false".equals(System.getProperty("patch.ij1")))
 			return;
 		try {
-			initializerClass = net.imagej.legacy.plugin.LegacyInitializer.class;
-			LegacyInjector.preinit();
-			ij1PatcherFound = true;
+			String ijDirProperty = System.getProperty("imagej.dir");
+			if (ijDirProperty == null) ijDirProperty = System.getProperty("ij.dir");
+			final File jars = ijDirProperty == null ? null : new File(ijDirProperty, "jars");
+			if (jars == null || FileUtils.getAllVersions(jars, "imagej-legacy.jar").length > 0) {
+				LegacyInjector.preinit();
+				ij1PatcherFound = true;
+			}
+			else if (FileUtils.getAllVersions(jars, "ij-legacy.jar").length > 0) try {
+				Thread.currentThread().setContextClassLoader(
+						getClass().getClassLoader());
+				fallBackToPreviousLegacyEnvironment(ClassPool.getDefault());
+			}
+			catch (Throwable t) {
+				t.printStackTrace();
+				throw new NoClassDefFoundError();
+			}
+			else {
+				throw new NoClassDefFoundError();
+			}
 		} catch (NoClassDefFoundError e) {
 			fallBackToPreviousPatcher();
 		}
@@ -48,6 +65,7 @@ public class IJ1Patcher implements Runnable {
 				fallBackToPreviousLegacyEnvironment(pool);
 				return;
 			} catch (Throwable t) {
+				t.printStackTrace();
 				// ignore; fall back to previous patching method
 			}
 
@@ -98,7 +116,6 @@ public class IJ1Patcher implements Runnable {
 				pool,
 				"imagej.patcher.LegacyInjector.preinit();"
 						// need to have a matching legacy service
-						+ "new imagej.legacy.plugin.LegacyInitializer();"
 						+ "new imagej.patcher.LegacyEnvironment(getClass().getClassLoader(),"
 						+ " java.awt.GraphicsEnvironment.isHeadless());");
 		previousIJ1PatcherFound = true;

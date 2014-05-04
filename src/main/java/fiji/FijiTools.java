@@ -393,6 +393,7 @@ public class FijiTools {
 				plugin.run(arg);
 			}
 		}
+		catch (NoClassDefFoundError e) { }
 		catch (ClassNotFoundException e) { }
 		catch (InstantiationException e) { }
 		catch (IllegalAccessException e) { }

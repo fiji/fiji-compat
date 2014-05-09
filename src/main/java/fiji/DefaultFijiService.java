@@ -33,10 +33,10 @@ public class DefaultFijiService extends AbstractService implements FijiService {
 		FileDialogDecorator.registerAutomaticDecorator();
 		JFileChooserDecorator.registerAutomaticDecorator();
 		setAWTAppClassName(Main.class);
-		runPlugInGently("fiji.util.RedirectErrAndOut", null);
-		new MenuRefresher().run();
 		final ImageJ ij = IJ.getInstance();
 		if (ij != null) {
+			runPlugInGently("fiji.util.RedirectErrAndOut", null);
+			new MenuRefresher().run();
 			new Thread() {
 				@Override
 				public void run() {

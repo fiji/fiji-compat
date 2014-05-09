@@ -39,6 +39,7 @@ public class DefaultFijiService extends AbstractService implements FijiService {
 		final ImageJ ij = IJ.getInstance();
 		if (ij != null) {
 			new Thread() {
+				@Override
 				public void run() {
 					/*
 					 * Do not run updater when command line

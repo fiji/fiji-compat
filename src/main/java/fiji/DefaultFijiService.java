@@ -11,9 +11,11 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
 import java.lang.reflect.Field;
 
+import org.scijava.event.EventHandler;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
+import org.scijava.service.event.ServicesLoadedEvent;
 
 /**
  * The default initializer for the Fiji legacy application.
@@ -28,8 +30,7 @@ import org.scijava.service.Service;
 @Plugin(type = Service.class)
 public class DefaultFijiService extends AbstractService implements FijiService {
 
-	@Override
-	public void initialize() {
+	public void actuallyInitialize() {
 		FileDialogDecorator.registerAutomaticDecorator();
 		JFileChooserDecorator.registerAutomaticDecorator();
 		setAWTAppClassName(Main.class);
@@ -56,6 +57,11 @@ public class DefaultFijiService extends AbstractService implements FijiService {
 			}.start();
 			new IJ_Alt_Key_Listener().run();
 		}
+	}
+
+	@EventHandler
+	protected void onEvent(@SuppressWarnings("unused") ServicesLoadedEvent evt) {
+		actuallyInitialize();
 	}
 
 	private static boolean setAWTAppClassName(Class<?> appClass) {

@@ -2,6 +2,8 @@ package fiji;
 
 import static fiji.FijiTools.runPlugInGently;
 import static fiji.FijiTools.runUpdater;
+import fiji.gui.FileDialogDecorator;
+import fiji.gui.JFileChooserDecorator;
 import ij.IJ;
 import ij.ImageJ;
 
@@ -12,9 +14,6 @@ import java.lang.reflect.Field;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
-
-import fiji.gui.FileDialogDecorator;
-import fiji.gui.JFileChooserDecorator;
 
 /**
  * The default initializer for the Fiji legacy application.

@@ -2,6 +2,8 @@ package fiji;
 
 import static fiji.FijiTools.runPlugInGently;
 import static fiji.FijiTools.runUpdater;
+import fiji.gui.FileDialogDecorator;
+import fiji.gui.JFileChooserDecorator;
 import ij.IJ;
 import ij.ImageJ;
 
@@ -9,12 +11,11 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
 import java.lang.reflect.Field;
 
+import org.scijava.event.EventHandler;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
-
-import fiji.gui.FileDialogDecorator;
-import fiji.gui.JFileChooserDecorator;
+import org.scijava.service.event.ServicesLoadedEvent;
 
 /**
  * The default initializer for the Fiji legacy application.
@@ -29,16 +30,16 @@ import fiji.gui.JFileChooserDecorator;
 @Plugin(type = Service.class)
 public class DefaultFijiService extends AbstractService implements FijiService {
 
-	@Override
-	public void initialize() {
+	public void actuallyInitialize() {
 		FileDialogDecorator.registerAutomaticDecorator();
 		JFileChooserDecorator.registerAutomaticDecorator();
 		setAWTAppClassName(Main.class);
-		runPlugInGently("fiji.util.RedirectErrAndOut", null);
-		new MenuRefresher().run();
 		final ImageJ ij = IJ.getInstance();
 		if (ij != null) {
+			runPlugInGently("fiji.util.RedirectErrAndOut", null);
+			new MenuRefresher().run();
 			new Thread() {
+				@Override
 				public void run() {
 					/*
 					 * Do not run updater when command line
@@ -56,6 +57,11 @@ public class DefaultFijiService extends AbstractService implements FijiService {
 			}.start();
 			new IJ_Alt_Key_Listener().run();
 		}
+	}
+
+	@EventHandler
+	protected void onEvent(@SuppressWarnings("unused") ServicesLoadedEvent evt) {
+		actuallyInitialize();
 	}
 
 	private static boolean setAWTAppClassName(Class<?> appClass) {

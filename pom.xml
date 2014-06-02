@@ -79,7 +79,7 @@
 							<goal>verify</goal>
 						</goals>
 						<configuration>
-							<argLine>-Djava.awt.headless=true</argLine>
+							<argLine>${argLine} -Djava.awt.headless=true</argLine>
 							<includes>
 								<include>**/BarePluginsIT.java</include>
 							</includes>

@@ -17,11 +17,6 @@
 	<name>jars/fiji-compat.jar</name>
 	<description></description>
 
-	<properties>
-		<scijava-common.version>2.18.1</scijava-common.version>
-		<ij1-patcher.version>0.4.0</ij1-patcher.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>net.imagej</groupId>

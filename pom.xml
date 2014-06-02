@@ -38,14 +38,13 @@
 			<groupId>net.imagej</groupId>
 			<artifactId>ij1-patcher</artifactId>
 		</dependency>
-
-		<!-- NB: Artifacts which we would like included with Fiji regardless
-		     of whether any Fiji plugin depends on them directly. -->
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>imagej</artifactId>
-			<scope>runtime</scope>
 		</dependency>
+
+		<!-- NB: Artifacts which we would like included with Fiji regardless
+		     of whether any Fiji plugin depends on them directly. -->
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>

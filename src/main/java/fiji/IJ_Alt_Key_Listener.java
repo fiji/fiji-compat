@@ -19,6 +19,7 @@ public class IJ_Alt_Key_Listener extends KeyAdapter implements FocusListener, Ru
 
 	@Override
 	public void run() {
+		if (IJ.getInstance() == null) return;
 		if (removeRegisteredListeners()) {
 			if (IJ.debugMode)
 				IJ.showStatus("Alt Key listener removed.");

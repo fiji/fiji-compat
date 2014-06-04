@@ -6,12 +6,7 @@ import ij.Prefs;
 import ij.plugin.PlugIn;
 
 import java.awt.Menu;
-import java.awt.MenuItem;
-import java.awt.event.KeyEvent;
-import java.lang.reflect.Method;
 import java.util.Hashtable;
-
-import net.imagej.legacy.SwitchToModernMode;
 
 public class MenuRefresher implements PlugIn, Runnable {
 
@@ -28,55 +23,9 @@ public class MenuRefresher implements PlugIn, Runnable {
 
 	@Override
 	public void run() {
-		if (IJ.getInstance() != null) {
-			Menu help = Menus.getMenuBar().getHelpMenu();
-			for (int i = help.getItemCount() - 1; i >= 0; i--) {
-				MenuItem item = help.getItem(i);
-				String name = item.getLabel();
-				if (name.equals("Update Menus"))
-					item.setLabel("Refresh Menus");
-			}
-		}
-
-		installScripts();
 		overrideCommands();
-		try {
-			SwitchToModernMode.registerMenuItem();
-		}
-		catch (Throwable t) {
-			// fall back to old package name
-			try {
-				final Class<?> clazz = Class.forName("imagej.legacy.SwitchToModernMode");
-				final Method method = clazz.getMethod("registerMenuItem");
-				method.invoke(null);
-			}
-			catch (Throwable t2) {
-				t.printStackTrace();
-				t2.printStackTrace();
-			}
-		}
 		SampleImageLoader.install();
 		Main.installRecentCommands();
-
-		// install '{' as short cut for the Script Editor
-		@SuppressWarnings("unchecked")
-		final Hashtable<Integer, String> shortcuts = (Hashtable<Integer, String>)Menus.getShortcuts();
-		shortcuts.put(KeyEvent.VK_OPEN_BRACKET, "Script Editor");
-		shortcuts.put(200 + KeyEvent.VK_OPEN_BRACKET, "Script Editor");
-	}
-
-	/**
-	 * Install the scripts in Fiji.app/plugins/
-	 */
-	public static void installScripts() {
-		if (System.getProperty("jnlp") != null)
-			return;
-		FijiTools.runGently("Refresh Javas");
-		String[] languages = { "Jython", "JRuby", "Clojure", "BSH",
-				"Javascript", "Scala" };
-		for (int i = 0; i < languages.length; i++)
-			FijiTools.runGently("Refresh " + languages[i] + " Scripts");
-		FijiTools.runGently("Refresh Macros");
 	}
 
 	@SuppressWarnings("unchecked")

@@ -1,16 +1,18 @@
 package fiji;
 
-import fiji.gui.FileDialogDecorator;
-import fiji.gui.JFileChooserDecorator;
 import ij.IJ;
 import ij.ImageJ;
-import net.imagej.patcher.LegacyEnvironment;
 
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.lang.reflect.Field;
 
+import net.imagej.patcher.LegacyEnvironment;
+
 import org.scijava.Context;
+
+import fiji.gui.FileDialogDecorator;
+import fiji.gui.JFileChooserDecorator;
 
 /**
  * Main entry point into Fiji.

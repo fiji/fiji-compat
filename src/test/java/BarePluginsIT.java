@@ -12,10 +12,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
+import java.util.jar.Attributes.Name;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -23,6 +25,7 @@ import javassist.CtClass;
 import javassist.CtNewMethod;
 import javassist.LoaderClassPath;
 import javassist.NotFoundException;
+import net.imagej.patcher.LegacyInjector;
 
 import org.junit.Test;
 import org.scijava.util.ClassUtils;
@@ -31,7 +34,6 @@ import org.scijava.util.FileUtils;
 import test.Dependency;
 import test.Missing_Dependency;
 import test.Test_PlugIn;
-
 import fiji.IJ1Patcher;
 
 /**
@@ -56,13 +58,18 @@ public class BarePluginsIT {
 
 	@Test
 	public void testBarePlugins() throws Exception {
-		final String testClasses = ClassUtils.getLocation(BarePluginsIT.class).getPath();
+		final URL testClassesURL = ClassUtils.getLocation(BarePluginsIT.class);
+		final String testClasses = testClassesURL.getPath();
 		assertTrue(testClasses.endsWith("/target/test-classes/"));
 		final String basedir = testClasses.substring(0, testClasses.length() - "test-classes/".length());
 		assertTrue(new File(basedir).isDirectory());
 
-		final File ijRoot = new File(basedir, "target/ijRoot");
+		final File testClasses2 = new File(basedir, "test-classes2");
+		assertTrue("Could not delete " + testClasses2,
+			!testClasses2.isDirectory() || FileUtils.deleteRecursively(testClasses2));
+		assertTrue("Could not make " + testClasses2, testClasses2.mkdirs());
 
+		final File ijRoot = new File(basedir, "target/ijRoot");
 		assertTrue("Could not delete " + ijRoot,
 			!ijRoot.isDirectory() || FileUtils.deleteRecursively(ijRoot));
 		assertTrue("Could not make " + ijRoot, ijRoot.mkdirs());
@@ -73,17 +80,46 @@ public class BarePluginsIT {
 		final File jars = new File(ijRoot, "jars");
 		assertTrue("Could not make " + jars, jars.mkdirs());
 
-		copyClass(Bare_PlugIn.class, plugins);
-		copyClass(Test_PlugIn.class, plugins);
-		copyClass(Another_Bare_PlugIn.class, sub);
-		copyClass(Missing_Dependency.class, plugins);
+		for (final URL url : FileUtils.listContents(testClassesURL, true, true)) {
+			final String path = url.getPath();
+			final String relative = path.substring(testClasses.length());
+			final int slash = relative.lastIndexOf('/');
+			final String baseName = relative.substring(slash + 1);
+			File targetDirectory;
+			if (baseName.equals("Bare_PlugIn.class") ||
+				baseName.equals("Test_PlugIn.class") ||
+				baseName.equals("Missing_Dependency.class"))
+			{
+				if (slash < 0) {
+					targetDirectory = plugins;
+				}
+				else {
+					targetDirectory = new File(plugins, relative.substring(0, slash));
+				}
+			}
+			else if (baseName.equals("Another_Bare_PlugIn.class")) {
+				targetDirectory = sub;
+			}
+			else if (baseName.equals("Dependency.class")) {
+				continue; // skip file
+			}
+			else if (slash < 0) {
+				targetDirectory = testClasses2;
+			}
+			else {
+				targetDirectory = new File(testClasses2, relative.substring(0, slash));
+			}
+			copyFile(url, targetDirectory);
+		}
+
 		writeChangedMethodPlugin(plugins);
 
 		Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
 		new IJ1Patcher().run();
 
-		final ClassLoader loader = makeRestrictedClassLoader(Bare_PlugIn.class,
-				Test_PlugIn.class, Another_Bare_PlugIn.class,
+		final ClassLoader loader =
+			makeRestrictedClassLoader(testClassesURL, testClasses2.toURI().toURL(),
+				Bare_PlugIn.class, Test_PlugIn.class, Another_Bare_PlugIn.class,
 				Missing_Dependency.class, Dependency.class);
 		final Class<?> self = loader.loadClass(getClass().getName());
 		final Object object = self.newInstance();
@@ -107,27 +143,42 @@ public class BarePluginsIT {
 	 *            the class to restrict to
 	 * @return the class loader
 	 */
-	private ClassLoader makeRestrictedClassLoader(final Class<?>... exclude) {
+	private ClassLoader makeRestrictedClassLoader(final URL excludeURL, final URL additionalURL, final Class<?>... exclude) throws IOException {
 		final ClassLoader loader = getClass().getClassLoader();
 		assertTrue(loader instanceof URLClassLoader);
 
-		final Set<String> blacklist = new HashSet<String>();
-		for (final Class<?> clazz : exclude) {
-			blacklist.add(clazz.getName());
+		URL[] urls = ((URLClassLoader)loader).getURLs();
+		if (urls.length == 1 && urls[0].toString().matches(".*/target/surefire/surefirebooter[0-9]*\\.jar")) {
+			final URL url = urls[0];
+			urls = null;
+			final JarFile jar = new JarFile(url.getPath());
+			Manifest manifest = jar.getManifest();
+			if (manifest != null) {
+				final String classPath =
+					manifest.getMainAttributes().getValue(Name.CLASS_PATH);
+				if (classPath != null) {
+					final String[] elements = classPath.split(" +");
+					urls = new URL[elements.length];
+					for (int i = 0; i < urls.length; i++) {
+						urls[i] = new URL(url, elements[i]);
+					}
+				}
+			}
 		}
 
-		final ClassLoader result = new URLClassLoader(((URLClassLoader)loader).getURLs(), loader.getParent()) {
-			@Override
-			public Class<?> loadClass(final String name) throws ClassNotFoundException {
-				if (blacklist.contains(name)) throw new ClassNotFoundException("Blacklisted: " + name);
-				return super.loadClass(name);
+		for (int i = 0; ; i++) {
+			if (excludeURL.equals(urls[i])) {
+				urls[i] = additionalURL;
+				break;
 			}
-		};
+		}
+
+		final ClassLoader result = new URLClassLoader(urls, loader.getParent());
 
 		for (final Class<?> clazz : exclude) try {
 			assertTrue(result.loadClass(clazz.getName()) == null);
 		} catch (ClassNotFoundException e) {
-			assertTrue(e.getMessage().startsWith("Blacklist"));
+			assertTrue(e.getMessage().equals(clazz.getName()));
 		}
 
 		return result;
@@ -150,8 +201,19 @@ public class BarePluginsIT {
 			// alright, let's go on!
 		}
 
-		Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-		new IJ1Patcher().run();
+		try {
+			final URL[] urls = new URL[] { new File(ijRoot, "plugins").toURI().toURL() };
+			final URLClassLoader loader = new URLClassLoader(urls, getClass().getClassLoader());
+			Thread.currentThread().setContextClassLoader(loader);
+			LegacyInjector.preinit();
+			assertTrue(loader.loadClass("Bare_PlugIn").getName() != null);
+		}
+		catch (MalformedURLException e) {
+			throw new RuntimeException(e);
+		}
+		catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
 
 		System.err.println("Redirecting stdout");
 
@@ -169,25 +231,20 @@ public class BarePluginsIT {
 		final PrintStream tee = new PrintStream(teeBuffer);
 		System.setOut(tee);
 
-		final String ijPath = ijRoot.getAbsolutePath();
-		System.setProperty("ij.dir", ijPath);
-		System.setProperty("plugins.dir", ijPath);
-
-		assertPlugInOutput("Bare PlugIn", "Hello (bare) world!", ijPath, stdout, tee, teeBuffer);
-		assertPlugInOutput("Test PlugIn", "Hello (test) world!", ijPath, stdout, tee, teeBuffer);
-		assertPlugInOutput("Another Bare PlugIn", "Hello (another bare) world!", ijPath, stdout, tee, teeBuffer);
-		assertPlugInOutput("Missing Dependency", "java.lang.NoClassDefFoundError: test/Dependency", ijPath, stdout, tee, teeBuffer);
+		assertPlugInOutput("Bare PlugIn", "Hello (bare) world!", stdout, tee, teeBuffer);
+		assertPlugInOutput("Test PlugIn", "Hello (test) world!", stdout, tee, teeBuffer);
+		assertPlugInOutput("Another Bare PlugIn", "Hello (another bare) world!", stdout, tee, teeBuffer);
+		assertPlugInOutput("Missing Dependency", "java.lang.NoClassDefFoundError: test/Dependency", stdout, tee, teeBuffer);
 		assertPlugInOutput("Changed Method Signature",
-			"There was a problem with the class ij.ImageJ which can be found here:", ijPath, stdout, tee, teeBuffer);
+			"There was a problem with the class ij.ImageJ which can be found here:", stdout, tee, teeBuffer);
 
 		teeBuffer.reset();
 	}
 
-	private void copyClass(final Class<?> clazz, final File targetDirectory) throws FileNotFoundException, IOException {
-		final String className = clazz.getName();
-		final String path = className.replace('.', '/') + ".class";
-		final File target = new File(targetDirectory, path);
-		final URL url = clazz.getResource("/" + path);
+	private void copyFile(final URL url, final File targetDirectory) throws FileNotFoundException, IOException {
+		final String path = url.getPath();
+		final String baseName = path.substring(path.lastIndexOf('/') + 1);
+		final File target = new File(targetDirectory, baseName);
 		System.err.println("Copying " + url + " to " + target);
 		copyStream(url.openStream(), target);
 	}
@@ -244,15 +301,14 @@ public class BarePluginsIT {
 	        out.close();
 	}
 
-	private void assertPlugInOutput(final String plugin, final String expectedFirstLine, final String ijPath,
+	private void assertPlugInOutput(final String plugin, final String expectedFirstLine,
 			final PrintStream stdout, final PrintStream tee, final ByteArrayOutputStream teeBuffer) {
 		System.err.println("Running " + plugin);
 		tee.flush();
 		stdout.flush();
 		teeBuffer.reset();
 		System.setProperty("ij1.plugin.dirs", "/non-existing/");
-		fiji.Main.main(new String[] {
-			"-ijpath", ijPath,
+		net.imagej.Main.main(new String[] {
 			"-eval", "run(\"" + plugin + "\");",
 			"-batch-no-exit"
 		});

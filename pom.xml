@@ -17,11 +17,6 @@
 	<name>jars/fiji-compat.jar</name>
 	<description></description>
 
-	<properties>
-		<scijava-common.version>2.18.1</scijava-common.version>
-		<ij1-patcher.version>0.4.0</ij1-patcher.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>net.imagej</groupId>
@@ -43,14 +38,13 @@
 			<groupId>net.imagej</groupId>
 			<artifactId>ij1-patcher</artifactId>
 		</dependency>
-
-		<!-- NB: Artifacts which we would like included with Fiji regardless
-		     of whether any Fiji plugin depends on them directly. -->
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>imagej</artifactId>
-			<scope>runtime</scope>
 		</dependency>
+
+		<!-- NB: Artifacts which we would like included with Fiji regardless
+		     of whether any Fiji plugin depends on them directly. -->
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
@@ -85,7 +79,7 @@
 							<goal>verify</goal>
 						</goals>
 						<configuration>
-							<argLine>-Djava.awt.headless=true</argLine>
+							<argLine>${argLine} -Djava.awt.headless=true</argLine>
 							<includes>
 								<include>**/BarePluginsIT.java</include>
 							</includes>

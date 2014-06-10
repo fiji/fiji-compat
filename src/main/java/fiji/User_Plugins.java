@@ -102,10 +102,9 @@ public class User_Plugins implements PlugIn {
 
 	/**
 	 * Install the scripts in Fiji.app/plugins/
-	 * @deprecated Use {@link MenuRefresher#installScripts()} instead
+	 * @deprecated No longer used
 	 */
 	public static void installScripts() {
-		MenuRefresher.installScripts();
 	}
 
 	/**

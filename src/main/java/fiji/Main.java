@@ -1,16 +1,22 @@
 package fiji;
 
-import fiji.gui.FileDialogDecorator;
-import fiji.gui.JFileChooserDecorator;
 import ij.IJ;
 import ij.ImageJ;
-import net.imagej.patcher.LegacyEnvironment;
 
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import net.imagej.patcher.LegacyEnvironment;
 
 import org.scijava.Context;
+
+import fiji.gui.FileDialogDecorator;
+import fiji.gui.JFileChooserDecorator;
 
 /**
  * Main entry point into Fiji.
@@ -148,7 +154,30 @@ public class Main {
 	@Deprecated
 	public static void postmain() { }
 
+	@Deprecated
 	public static void main(String[] args) {
+		// Try to launch ImageJ2 instead; this requires a full class path, though
+		try {
+			final Class<?> launcher = Class.forName("net.imagej.launcher.ClassLauncher");
+			final Field original = launcher.getDeclaredField("originalArguments");
+			original.setAccessible(true);
+			final List<String> arguments =
+				new ArrayList<String>(Arrays.asList((String[]) original.get(null)));
+			for (int i = 0; i < arguments.size(); i++) {
+				if ("fiji.Main".equals(arguments.get(i))) {
+					arguments.set(i, "net.imagej.Main");
+					break;
+				}
+			}
+			arguments.addAll(0, Arrays.asList("-ijjarpath", "plugins", "-ijjarpath", "jars"));
+			final Method main = launcher.getMethod("main", String[].class);
+			main.invoke(null, (Object)arguments.toArray(new String[arguments.size()]));
+			return;
+		} catch (Throwable t) {
+			t.printStackTrace();
+		}
+
+		// fall back to previous method
 		if (IJ1Patcher.ij1PatcherFound) try {
 			LegacyEnvironment.getPatchedImageJ1().main(args);
 		} catch (ClassNotFoundException e) {

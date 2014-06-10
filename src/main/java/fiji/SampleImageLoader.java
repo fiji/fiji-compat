@@ -1,22 +1,20 @@
 package fiji;
 
 import ij.IJ;
+import ij.ImagePlus;
 import ij.Menus;
-
+import ij.io.Opener;
 import ij.plugin.PlugIn;
 import ij.plugin.URLOpener;
 
 import java.awt.Menu;
 import java.awt.MenuItem;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
 import java.net.URL;
 import java.net.URLConnection;
-
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -36,8 +34,13 @@ public class SampleImageLoader implements PlugIn {
 
 		File cached = getCached(arg);
 		if (cached != null) try {
-			IJ.open(cached.getPath());
-			return;
+			final ImagePlus imp = IJ.openImage(cached.getPath());
+			if (imp != null) {
+				// *sigh* This is copied from the ImagePlus(String pathOrUrl) constructor:
+				Opener.convertGrayJpegTo8Bits(imp);
+				imp.show();
+				return;
+			}
 		} catch(Exception e) { e.printStackTrace(); }
 
 		new URLOpener().run(arg);

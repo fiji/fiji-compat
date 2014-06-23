@@ -24,6 +24,7 @@ public class SampleImageLoader implements PlugIn {
 	protected final static String thisPlugin = "fiji.SampleImageLoader";
 	protected final static String menuPath = "File>Open Samples";
 	protected final static String menuItemLabel = "Cache Sample Images";
+	protected final static String ij1MenuItemLabel = "Cache Sample Images ";
 
 	@Override
 	public void run(String arg) {
@@ -118,8 +119,16 @@ public class SampleImageLoader implements PlugIn {
 		handleSamples(handler);
 
 		if (!commands.containsKey(menuItemLabel)) {
-			MenuItem item = FijiTools.installPlugin(menuPath, menuItemLabel,
-				thisPlugin + "(\"cache\")");
+			MenuItem item;
+			if (commands.containsKey(ij1MenuItemLabel)) {
+				item = FijiTools.getMenuItem(menuPath + ">" + ij1MenuItemLabel);
+				commands.put(ij1MenuItemLabel, thisPlugin + "(\"cache\")");
+				commands.put(menuItemLabel, thisPlugin + "(\"cache\")");
+			}
+			else {
+				item = FijiTools.installPlugin(menuPath, menuItemLabel,
+					thisPlugin + "(\"cache\")");
+			}
 			if (item != null)
 				item.setEnabled(handler.hasUncached);
 		}

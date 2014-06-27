@@ -37,8 +37,15 @@ public class SampleImageLoader implements PlugIn {
 		if (cached != null) try {
 			final ImagePlus imp = IJ.openImage(cached.getPath());
 			if (imp != null) {
-				// *sigh* This is copied from the ImagePlus(String pathOrUrl) constructor:
-				Opener.convertGrayJpegTo8Bits(imp);
+				switch (imp.getBitDepth()) {
+				case 16:
+					imp.resetDisplayRange();
+					break;
+				case 24:
+					// *sigh* This is copied from the ImagePlus(String pathOrUrl) constructor:
+					Opener.convertGrayJpegTo8Bits(imp);
+					break;
+				}
 				imp.show();
 				return;
 			}

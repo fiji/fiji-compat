@@ -51,8 +51,6 @@ public class DefaultFijiService extends AbstractService implements FijiService {
 					String[] ijArgs = ImageJ.getArgs();
 					if (ijArgs != null && ijArgs.length > 3)
 						return;
-
-					runUpdater();
 				}
 			}.start();
 			new IJ_Alt_Key_Listener().run();

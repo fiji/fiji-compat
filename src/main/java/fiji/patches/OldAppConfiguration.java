@@ -1,11 +1,11 @@
 package fiji.patches;
 
+import fiji.Main;
+import imagej.legacy.plugin.LegacyAppConfiguration;
+
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import fiji.Main;
-import imagej.legacy.plugin.LegacyAppConfiguration;
 
 import org.scijava.plugin.Plugin;
 import org.scijava.util.AppUtils;

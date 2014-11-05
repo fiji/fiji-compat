@@ -5,7 +5,6 @@ import ij.ImageJ;
 
 import java.awt.Image;
 import java.awt.image.ImageProducer;
-
 import java.net.URL;
 
 public class SetIcon {

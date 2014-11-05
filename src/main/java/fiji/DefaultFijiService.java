@@ -1,7 +1,6 @@
 package fiji;
 
 import static fiji.FijiTools.runPlugInGently;
-import static fiji.FijiTools.runUpdater;
 import fiji.gui.FileDialogDecorator;
 import fiji.gui.JFileChooserDecorator;
 import ij.IJ;

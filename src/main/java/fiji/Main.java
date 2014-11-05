@@ -1,5 +1,7 @@
 package fiji;
 
+import fiji.gui.FileDialogDecorator;
+import fiji.gui.JFileChooserDecorator;
 import ij.IJ;
 import ij.ImageJ;
 
@@ -14,9 +16,6 @@ import java.util.List;
 import net.imagej.patcher.LegacyEnvironment;
 
 import org.scijava.Context;
-
-import fiji.gui.FileDialogDecorator;
-import fiji.gui.JFileChooserDecorator;
 
 /**
  * Main entry point into Fiji.

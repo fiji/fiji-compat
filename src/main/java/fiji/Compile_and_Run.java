@@ -1,9 +1,7 @@
 package fiji;
 
 import ij.IJ;
-
 import ij.io.OpenDialog;
-
 import ij.plugin.PlugIn;
 
 import java.io.File;

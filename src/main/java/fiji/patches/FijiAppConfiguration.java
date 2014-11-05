@@ -1,5 +1,7 @@
 package fiji.patches;
 
+import fiji.Main;
+
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -8,8 +10,6 @@ import net.imagej.legacy.plugin.LegacyAppConfiguration;
 
 import org.scijava.plugin.Plugin;
 import org.scijava.util.AppUtils;
-
-import fiji.Main;
 
 @Plugin(type = LegacyAppConfiguration.class)
 public class FijiAppConfiguration implements LegacyAppConfiguration {

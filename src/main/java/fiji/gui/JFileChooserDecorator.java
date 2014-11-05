@@ -4,22 +4,17 @@ import java.awt.AWTEvent;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Toolkit;
-
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
-
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
-
 import java.awt.event.AWTEventListener;
 import java.awt.event.ContainerEvent;
-
 import java.io.File;
-
 import java.util.WeakHashMap;
 
 import javax.swing.JFileChooser;

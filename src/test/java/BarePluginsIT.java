@@ -1,5 +1,6 @@
 
 import static org.junit.Assert.assertTrue;
+import fiji.IJ1Patcher;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -15,9 +16,9 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.jar.Attributes.Name;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
-import java.util.jar.Attributes.Name;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -34,7 +35,6 @@ import org.scijava.util.FileUtils;
 import test.Dependency;
 import test.Missing_Dependency;
 import test.Test_PlugIn;
-import fiji.IJ1Patcher;
 
 /**
  * Verifies that <i>.class</i> files can live in a couple of crazy places in

@@ -1,9 +1,9 @@
 package fiji.patches;
 
-import java.io.File;
-
 import fiji.FijiTools;
 import imagej.legacy.plugin.LegacyEditor;
+
+import java.io.File;
 
 import org.scijava.plugin.Plugin;
 

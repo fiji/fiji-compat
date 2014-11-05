@@ -15,8 +15,6 @@ import java.util.Set;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
-import org.scijava.util.FileUtils;
-
 import javassist.CannotCompileException;
 import javassist.ClassClassPath;
 import javassist.ClassPool;
@@ -30,6 +28,8 @@ import javassist.bytecode.InstructionPrinter;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
 import javassist.expr.MethodCall;
+
+import org.scijava.util.FileUtils;
 
 /**
  * A helper to use Javassist effectively

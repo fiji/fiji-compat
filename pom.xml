@@ -29,6 +29,10 @@
 		<url>http://jenkins.imagej.net/job/fiji-compat/</url>
 	</ciManagement>
 
+	<properties>
+		<main-class>fiji.Main</main-class>
+	</properties>
+
 	<repositories>
 		<!-- NB: for project parent -->
 		<repository>
@@ -102,7 +106,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>fiji.Main</mainClass>
+							<mainClass>${main-class}</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

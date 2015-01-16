@@ -8,8 +8,10 @@ public class Compile_and_Run implements PlugIn {
 
 	protected static String directory, fileName;
 
+	@Override
 	public void run(String arg) {
-		IJ.log("WARNING: Dynamic plugin execution is no longer supported. Please" +
-			" install your plugin and restart Fiji instead.");
+		IJ.showMessage("The \"Compile and Run\" command is not currently supported."
+			+ " We recommend using the Script Editor or an IDE such as Eclipse for "
+			+ "plugin development.");
 	}
 }

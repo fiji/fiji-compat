@@ -34,7 +34,7 @@ import org.scijava.util.FileUtils;
 /**
  * A helper to use Javassist effectively
  *
- * @deprecated use {@link imagej.legacy.CodeHacker} instead
+ * @deprecated use {@code net.imagej.legacy.CodeHacker} instead
  */
 public abstract class JavassistHelper implements Runnable {
 

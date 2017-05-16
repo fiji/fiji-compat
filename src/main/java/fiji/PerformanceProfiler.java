@@ -78,23 +78,21 @@ import javassist.Translator;
  * Use it in one of the following ways:
  * <ul>
  * <li>
- * <p>
  * insert the following line at the start of the main() method calling the code
- * to profile:<br />
- * <code>if (PerformanceProfiler.startProfiling(args)) return;</code><br />
+ * to profile:<br>
+ * {@code if (PerformanceProfiler.startProfiling(args)) return;}<br>
  * Subsequently, you can start/stop profiling by calling
  * {@link #setActive(boolean)}, print a report using
  * {@link #report(PrintStream)}, or print a report to a file with
  * {@link #report(File, int)}.
- * </p>
- * <p>
+ * <br><br>
  * Printing a report will reset the counters and stop profiling. If you want to
  * make sure the counters are reset and profiling is stopped, but not to print
- * anything, just call <code>PerformanceProfiler.report(null);</code>.
- * </p>
+ * anything, just call {@code PerformanceProfiler.report(null);}.
+ * </li>
  * <li>Call PerformanceProfiler as main class, passing as parameter the name of
  * the main class to profile and optionally any parameters you want to pass to
- * that main class.
+ * that main class.</li>
  * </ul>
  * 
  * <p>
@@ -264,10 +262,11 @@ public class PerformanceProfiler implements Translator {
 	 * The methods can be sorted by:
 	 * 
 	 * <ul>
-	 * <li>the name (column == 0)
-	 * <li>the number they were called (column == 1)
-	 * <li>the average time in nanoseconds (column == 2)
-	 * <li>the total time in nanoseconds (column = 3)
+	 * <li>the name (column == 0)</li>
+	 * <li>the number they were called (column == 1)</li>
+	 * <li>the average time in nanoseconds (column == 2)</li>
+	 * <li>the total time in nanoseconds (column = 3)</li>
+	 * </ul>
 	 *  
 	 * @param writer
 	 *            where to write to.

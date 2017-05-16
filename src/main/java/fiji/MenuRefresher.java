@@ -14,7 +14,7 @@ public class MenuRefresher implements PlugIn, Runnable {
 	 * The entry point of the {@link PlugIn}.
 	 * 
 	 * @param arg "update" if called from ij-legacy-patched ImageJ 1.x when the
-	 *          user called <i>Help>Refresh Menus</i>.
+	 *          user called {@code Help>Refresh Menus}.
 	 */
 	@Override
 	public void run(final String arg) {

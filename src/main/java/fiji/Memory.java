@@ -13,7 +13,7 @@ import java.io.PrintStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/** This plugin implements the Edit/Options/Memory & Threads... command. */
+/** This plugin implements the {@code Edit>Options>Memory & Threads...} command. */
 public class Memory implements PlugIn {
 	public void run(String arg) {
 		if (IJ.isMacOSX()) {

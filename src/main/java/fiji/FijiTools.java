@@ -27,11 +27,8 @@ public class FijiTools {
 	private static Field menuEntry2jarFile;
 	private static Field menuInstance;
 
-	/**
-	 * Get the path of the Fiji directory
-	 *
-	 * @Deprecated
-	 */
+	/** @deprecated Use {@link #getImageJDir} instead. */
+	@Deprecated
 	public static String getFijiDir() {
 		return getImageJDir();
 	}
@@ -225,7 +222,7 @@ public class FijiTools {
 	/**
 	 * Get the MenuItem instance for a given menu path
 	 *
-	 * @param menuPath the menu path, e.g. File>New>Bio-Formats
+	 * @param menuPath the menu path, e.g. {@code File>New>Bio-Formats}
 	 */
 	public static MenuItem getMenuItem(String menuPath) {
 		return getMenuItem(Menus.getMenuBar(), menuPath, false);
@@ -237,7 +234,7 @@ public class FijiTools {
 	 * If the menu item was not found, create a {@link Menu} for the given path.
 	 *
 	 * @param container an instance of {@link MenuBar} or {@link Menu}
-	 * @param menuPath the menu path, e.g. File>New>Bio-Formats
+	 * @param menuPath the menu path, e.g. {@code File>New>Bio-Formats}
 	 * @param createMenuIfNecessary if the menu item was not found, create a menu
 	 */
 	public static MenuItem getMenuItem(MenuContainer container,
@@ -326,7 +323,7 @@ public class FijiTools {
 	 * @param menuPath the menu into which to install it
 	 * @param name the label of the menu item
 	 * @param command the command to run (as per the plugins.config)
-	 * @param file the source file
+	 * @param jarFile the source file
 	 * @return the added menu item
 	 */
 	/* TODO: sorted */

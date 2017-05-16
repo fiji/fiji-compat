@@ -21,18 +21,10 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 /**
- * A class to find user plugins, i.e. plugins not inside Fiji.app/plugins/
- * 
- * This plugin looks through all files in a given directory (default:
- * $ROOT/user-plugins/, where $ROOT is the parent directory of
- * jars/ij-launcher.jar) and inserts the found plugins into a given menu
- * (default: Plugins>User).
- * 
- * @deprecated superseded by ImageJ2's {@link LegacyInjector} (which calls
- *             {@link CodeHacker#addExtraPlugins()}.)
- *
- * @author Johannes Schindelin
+ * @deprecated superseded by ImageJ2's {@code LegacyInjector} (which calls
+ *             {@code CodeHacker#addExtraPlugins()}.)
  */
+@Deprecated
 public class User_Plugins implements PlugIn {
 
 	private String path, menuPath;
@@ -48,7 +40,7 @@ public class User_Plugins implements PlugIn {
 	/**
 	 * Construct an instance which looks in the default places and strips the plugin prefix
 	 *
-	 * @param stripPluginsPrefix whether to delete "Plugins>" from the original plugin paths
+	 * @param stripPluginsPrefix whether to delete {@code Plugins>} from the original plugin paths
 	 */
 	public User_Plugins(boolean stripPluginsPrefix) {
 		this(getDefaultPath(), getDefaultMenuPath(), stripPluginsPrefix);
@@ -59,7 +51,7 @@ public class User_Plugins implements PlugIn {
 	 *
 	 * @param path the top directory being searched
 	 * @param menuPath the menu into which the plugins will be installed
-	 * @param stripPluginsPrefix whether to delete "Plugins>" from the original plugin paths
+	 * @param stripPluginsPrefix whether to delete {@code Plugins>} from the original plugin paths
 	 */
 	public User_Plugins(String path, String menuPath, boolean stripPluginsPrefix) {
 		this.path = path;
@@ -251,7 +243,7 @@ public class User_Plugins implements PlugIn {
 	 * @param menuPath the menu into which to install it
 	 * @param name the label of the menu item
 	 * @param command the command to run (as per the plugins.config)
-	 * @param file the source file
+	 * @param jarFile the source file
 	 * @return the added menu item
 	 * @deprecated Use {@link FijiTools#installPlugin(String,String,String,File)} instead
 	 */
@@ -271,7 +263,7 @@ public class User_Plugins implements PlugIn {
 	/**
 	 * Get the MenuItem instance for a given menu path
 	 *
-	 * @param menuPath the menu path, e.g. File>New>Bio-Formats
+	 * @param menuPath the menu path, e.g. {@code File>New>Bio-Formats}
 	 * @deprecated Use {@link FijiTools#getMenuItem(String)} instead
 	 */
 	public static MenuItem getMenuItem(String menuPath) {
@@ -284,7 +276,7 @@ public class User_Plugins implements PlugIn {
 	 * If the menu item was not found, create a {@link Menu} for the given path.
 	 *
 	 * @param container an instance of {@link MenuBar} or {@link Menu}
-	 * @param menuPath the menu path, e.g. File>New>Bio-Formats
+	 * @param menuPath the menu path, e.g. {@code File>New>Bio-Formats}
 	 * @param createMenuIfNecessary if the menu item was not found, create a menu
 	 * @deprecated Use {@link FijiTools#getMenuItem(MenuContainer,String,boolean)} instead
 	 */
